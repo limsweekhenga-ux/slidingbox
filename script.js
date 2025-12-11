@@ -3,18 +3,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const surfaceSelect = document.getElementById('surface-select');
     const surfaceDisplay = document.getElementById('surface-display');
     const requiredForceDisplay = document.getElementById('required-force-display');
-    const forceDisplay = document.getElementById('force-display'); // Slider reading on the spring balance
-    const pullSlider = document.getElementById('pull-slider'); // The new slider
-    const blockAndSpring = document.getElementById('block-and-spring');
+    const forceDisplay = document.getElementById('force-display');
     const pullFeedback = document.getElementById('pull-feedback');
+    const blockAndSpring = document.getElementById('block-and-spring');
+    const woodBlock = document.getElementById('wood-block'); // Target for clicking
 
     // Physics Constants and Variables
     const MASS_BLOCK = 0.5; // kg
-    const GRAVITY = 9.81; // m/s^2 (approximates Normal Force N = mg)
-    let requiredPullForce = 0; // Variable to store the calculated force
+    const GRAVITY = 9.81; // m/s^2
+    let requiredPullForce = 0; // The calculated static friction force
 
-    // Friction Coefficients (Example/Approximate values for kinetic friction mu_k)
-    // F_pull = mu_k * m * g
+    // Dragging state variables
+    let isDragging = false;
+    const START_OFFSET = 10; // Initial left position (in percentage)
+    const MAX_PULL_PIXELS = 300; // Max distance the block can be dragged
+    const FORCE_TO_PIXEL_RATIO = 50; // How many pixels of stretch equals 1 Newton of force (50 px/N)
+
+    // Friction Coefficients 
     const frictionCoefficients = {
         plastic: 0.1,    
         metal: 0.25,     
@@ -23,58 +28,98 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Calculates the required pulling force and updates the required force display.
-     * @param {string} surfaceKey - The key corresponding to the selected surface.
+     * Calculates the required pulling force based on the selected surface.
      */
     function updateRequiredForce(surfaceKey) {
         const mu_k = frictionCoefficients[surfaceKey];
-
-        // Calculate the required pulling force (F_pull) to overcome friction
         requiredPullForce = mu_k * MASS_BLOCK * GRAVITY;
 
-        // Update the visual surface
+        // Update visuals and reset block position
         surfaceDisplay.className = '';
         surfaceDisplay.classList.add(surfaceKey);
-        
-        // Update the REQUIRED force output (the answer the student is seeking)
         requiredForceDisplay.textContent = requiredPullForce.toFixed(2);
         
-        // Reset the slider and block position when surface changes
-        pullSlider.value = 0;
-        updateSimulationVisuals(0); 
-        pullFeedback.textContent = 'Slide the spring balance to pull the block.';
+        // Reset block position and feedback
+        blockAndSpring.style.transform = 'translateX(0px)';
+        forceDisplay.textContent = '0.00';
+        pullFeedback.textContent = 'Click and drag the block to pull.';
         pullFeedback.style.color = '#333';
     }
 
     /**
-     * Updates the visuals (block position and force reading) based on the slider.
-     * @param {number} pullForce - The force currently applied by the user (slider value).
+     * Handles the start of the dragging action (mousedown/touchstart).
      */
-    function updateSimulationVisuals(pullForce) {
-        // 1. Update the instantaneous force reading on the spring balance
-        forceDisplay.textContent = pullForce.toFixed(2);
+    function startDrag(e) {
+        isDragging = true;
+        // Prevent default text selection behavior
+        e.preventDefault(); 
+        
+        // Add event listeners to the window for moving and releasing
+        window.addEventListener('mousemove', dragMove);
+        window.addEventListener('mouseup', dragEnd);
+        
+        // For mobile devices:
+        window.addEventListener('touchmove', dragMove);
+        window.addEventListener('touchend', dragEnd);
+    }
 
-        // 2. Check if the applied force overcomes the required friction force
-        if (pullForce >= requiredPullForce) {
-            // Block is moving! 
-            const movement = 10 + (pullForce - requiredPullForce) * 20; 
-            blockAndSpring.style.transform = `translateX(${movement}px)`;
-            
-            pullFeedback.textContent = `SUCCESS! Block is moving at ${pullForce.toFixed(2)} N.`;
-            pullFeedback.style.color = '#5cb85c'; // Green
-        } else if (pullForce > 0) {
-            // Force is applied but NOT enough to move (static friction visualized)
-            const displacement = pullForce * 5; // Small displacement to show tension
-            blockAndSpring.style.transform = `translateX(${displacement}px)`;
-            
+    /**
+     * Handles the movement while dragging (mousemove/touchmove).
+     */
+    function dragMove(e) {
+        if (!isDragging) return;
+
+        // Determine the horizontal mouse/touch position
+        const clientX = e.clientX || e.touches[0].clientX;
+        
+        // Get the position of the simulation area to calculate drag distance
+        const simAreaRect = document.getElementById('simulation-area').getBoundingClientRect();
+        
+        // Calculate the raw drag distance from the start point
+        let dragDistance = clientX - simAreaRect.left - (simAreaRect.width * START_OFFSET / 100);
+        
+        // Clamp the distance to prevent dragging off the screen
+        dragDistance = Math.max(0, Math.min(dragDistance, MAX_PULL_PIXELS));
+        
+        // Calculate the applied force from the distance
+        const appliedForce = dragDistance / FORCE_TO_PIXEL_RATIO;
+        
+        // Update the visual spring balance reading
+        forceDisplay.textContent = appliedForce.toFixed(2);
+        
+        // Update the block's position
+        blockAndSpring.style.transform = `translateX(${dragDistance}px)`;
+
+        // Provide movement feedback
+        if (appliedForce >= requiredPullForce) {
+            pullFeedback.textContent = `SUCCESS! Block is moving at ${appliedForce.toFixed(2)} N.`;
+            pullFeedback.style.color = '#5cb85c'; 
+        } else if (appliedForce > 0) {
             pullFeedback.textContent = 'Force applied, but not enough to move the block.';
-            pullFeedback.style.color = '#f0ad4e'; // Orange/Yellow
+            pullFeedback.style.color = '#f0ad4e'; 
         } else {
-            // No force applied
-            blockAndSpring.style.transform = 'translateX(0px)';
-            pullFeedback.textContent = 'Slide the spring balance to pull the block.';
+            pullFeedback.textContent = 'Click and drag the block to pull.';
             pullFeedback.style.color = '#333';
         }
+    }
+
+    /**
+     * Handles the end of the dragging action (mouseup/touchend).
+     */
+    function dragEnd() {
+        if (!isDragging) return;
+        isDragging = false;
+        
+        // Clean up listeners
+        window.removeEventListener('mousemove', dragMove);
+        window.removeEventListener('mouseup', dragEnd);
+        window.removeEventListener('touchmove', dragMove);
+        window.removeEventListener('touchend', dragEnd);
+        
+        // Snap the block back to the starting position (simulating release)
+        blockAndSpring.style.transform = 'translateX(0px)';
+        forceDisplay.textContent = '0.00';
+        updateRequiredForce(surfaceSelect.value); // Reset feedback message
     }
 
     // --- EVENT LISTENERS ---
@@ -84,11 +129,10 @@ document.addEventListener('DOMContentLoaded', () => {
         updateRequiredForce(event.target.value);
     });
 
-    // 2. Slider input listener
-    pullSlider.addEventListener('input', (event) => {
-        const currentPullForce = parseFloat(event.target.value);
-        updateSimulationVisuals(currentPullForce);
-    });
+    // 2. Drag listener on the wood block (mousedown/touchstart initiates dragging)
+    woodBlock.addEventListener('mousedown', startDrag);
+    woodBlock.addEventListener('touchstart', startDrag);
+
 
     // Initialize the simulation with the default surface
     updateRequiredForce(surfaceSelect.value);
