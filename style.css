@@ -1,0 +1,120 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f4f4f9;
+}
+
+.dashboard {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 800px;
+    text-align: center;
+}
+
+h1 {
+    color: #333;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.controls, .data-output {
+    margin: 20px 0;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fafafa;
+}
+
+#surface-select {
+    padding: 8px 12px;
+    font-size: 16px;
+    border-radius: 4px;
+}
+
+/* Simulation Area Visuals */
+#simulation-area {
+    position: relative;
+    height: 150px;
+    border: 1px solid #ccc;
+    margin-top: 20px;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end; /* Align elements to the bottom */
+}
+
+#surface-display {
+    position: absolute;
+    width: 100%;
+    height: 50px; /* The height of the surface layer */
+    bottom: 0;
+    border-top: 5px solid #333;
+}
+
+#block-and-spring {
+    /* CRITICAL: Added transition for smooth movement, and positioning details */
+    transition: transform 0.05s ease-out; /* Fast transition for realistic dragging */
+    position: absolute;
+    bottom: 50px; /* Position above the surface layer */
+    left: 10%;
+    display: flex;
+    align-items: center;
+    z-index: 10; 
+}
+
+#wood-block {
+    width: 60px;
+    height: 40px;
+    background-color: #8B4513; /* Wood color */
+    border: 1px solid #65300d;
+    cursor: grab; /* Shows the user they can drag it */
+}
+
+.spring-balance {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80px;
+    height: 20px;
+    background-color: #c9c9c9;
+    border: 2px solid #666;
+    margin-right: 5px;
+}
+
+.scale-reading {
+    font-weight: bold;
+    font-size: 0.9em;
+    color: #000000;
+}
+
+/* Specific Surface Styles (Updated by JavaScript) */
+.plastic { background-color: #D3E0EA; }
+.metal { background-color: #A9A9A9; }
+.sandpaper { background-color: #CCAA99; background-image: repeating-linear-gradient(45deg, #775544 0, #775544 1px, transparent 1px, transparent 5px); }
+.carpet { background-color: #4CAF50; background-image: radial-gradient(#6BBF70 10%, transparent 11%); background-size: 10px 10px; }
+
+
+/* Data Output Styling */
+.data-output p {
+    margin: 5px 0;
+    text-align: left;
+    padding-left: 20px;
+}
+
+.feedback-message {
+    font-weight: bold;
+    margin-top: 10px;
+    min-height: 20px; 
+}
+
+#required-force-display {
+    color: #5cb85c;
+    font-size: 1.1em;
+}
