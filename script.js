@@ -3,17 +3,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const surfaceSelect = document.getElementById('surface-select');
     const surfaceDisplay = document.getElementById('surface-display');
     const requiredForceDisplay = document.getElementById('required-force-display');
-    const forceDisplay = document.getElementById('force-display'); // Slider reading
+    const forceDisplay = document.getElementById('force-display'); // Slider reading on the spring balance
     const pullSlider = document.getElementById('pull-slider'); // The new slider
     const blockAndSpring = document.getElementById('block-and-spring');
     const pullFeedback = document.getElementById('pull-feedback');
 
     // Physics Constants and Variables
     const MASS_BLOCK = 0.5; // kg
-    const GRAVITY = 9.81; // m/s^2
+    const GRAVITY = 9.81; // m/s^2 (approximates Normal Force N = mg)
     let requiredPullForce = 0; // Variable to store the calculated force
 
     // Friction Coefficients (Example/Approximate values for kinetic friction mu_k)
+    // F_pull = mu_k * m * g
     const frictionCoefficients = {
         plastic: 0.1,    
         metal: 0.25,     
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateRequiredForce(surfaceKey) {
         const mu_k = frictionCoefficients[surfaceKey];
 
-        // F_pull = mu_k * m * g
+        // Calculate the required pulling force (F_pull) to overcome friction
         requiredPullForce = mu_k * MASS_BLOCK * GRAVITY;
 
         // Update the visual surface
@@ -55,8 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. Check if the applied force overcomes the required friction force
         if (pullForce >= requiredPullForce) {
-            // Block is moving! Move the block more significantly
-            const movement = 10 + (pullForce - requiredPullForce) * 20; // Starts moving slightly past required force
+            // Block is moving! 
+            const movement = 10 + (pullForce - requiredPullForce) * 20; 
             blockAndSpring.style.transform = `translateX(${movement}px)`;
             
             pullFeedback.textContent = `SUCCESS! Block is moving at ${pullForce.toFixed(2)} N.`;
