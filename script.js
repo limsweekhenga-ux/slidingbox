@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Dragging state variables
     let isDragging = false;
     const START_OFFSET = 10; // Initial left position (in percentage)
-    const MAX_PULL_PIXELS = 300; // Max distance the block can be dragged
-    const FORCE_TO_PIXEL_RATIO = 50; // How many pixels of stretch equals 1 Newton of force (50 px/N)
+    const MAX_PULL_PIXELS = 300; // Max distance the block can be dragged (limits drag to prevent running off screen)
+    const FORCE_TO_PIXEL_RATIO = 50; // 50 pixels of stretch/pull = 1 Newton of force
 
     // Friction Coefficients 
     const frictionCoefficients = {
@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
      */
     function updateRequiredForce(surfaceKey) {
         const mu_k = frictionCoefficients[surfaceKey];
+        // F_pull = mu_k * m * g
         requiredPullForce = mu_k * MASS_BLOCK * GRAVITY;
 
         // Update visuals and reset block position
@@ -75,13 +76,14 @@ document.addEventListener('DOMContentLoaded', () => {
         // Get the position of the simulation area to calculate drag distance
         const simAreaRect = document.getElementById('simulation-area').getBoundingClientRect();
         
-        // Calculate the raw drag distance from the start point
+        // Calculate the raw drag distance from the starting point
+        // We subtract the sim area's left boundary and the initial 10% offset of the block
         let dragDistance = clientX - simAreaRect.left - (simAreaRect.width * START_OFFSET / 100);
         
         // Clamp the distance to prevent dragging off the screen
         dragDistance = Math.max(0, Math.min(dragDistance, MAX_PULL_PIXELS));
         
-        // Calculate the applied force from the distance
+        // Calculate the applied force: Force = Distance / Ratio
         const appliedForce = dragDistance / FORCE_TO_PIXEL_RATIO;
         
         // Update the visual spring balance reading
@@ -93,10 +95,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Provide movement feedback
         if (appliedForce >= requiredPullForce) {
             pullFeedback.textContent = `SUCCESS! Block is moving at ${appliedForce.toFixed(2)} N.`;
-            pullFeedback.style.color = '#5cb85c'; 
+            pullFeedback.style.color = '#5cb85c'; // Green
         } else if (appliedForce > 0) {
             pullFeedback.textContent = 'Force applied, but not enough to move the block.';
-            pullFeedback.style.color = '#f0ad4e'; 
+            pullFeedback.style.color = '#f0ad4e'; // Orange/Yellow
         } else {
             pullFeedback.textContent = 'Click and drag the block to pull.';
             pullFeedback.style.color = '#333';
@@ -119,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Snap the block back to the starting position (simulating release)
         blockAndSpring.style.transform = 'translateX(0px)';
         forceDisplay.textContent = '0.00';
-        updateRequiredForce(surfaceSelect.value); // Reset feedback message
+        updateRequiredForce(surfaceSelect.value); // Reset feedback message and force
     }
 
     // --- EVENT LISTENERS ---
