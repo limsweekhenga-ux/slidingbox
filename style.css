@@ -47,52 +47,82 @@ h1 {
     margin-top: 20px;
     overflow: hidden;
     display: flex;
-    align-items: flex-end; /* Align elements to the bottom */
+    align-items: flex-end; 
 }
 
 #surface-display {
     position: absolute;
     width: 100%;
-    height: 50px; /* The height of the surface layer */
+    height: 50px; 
     bottom: 0;
     border-top: 5px solid #333;
 }
 
 #block-and-spring {
-    /* CRITICAL: Added transition for smooth movement, and positioning details */
-    transition: transform 0.05s ease-out; /* Fast transition for realistic dragging */
+    transition: transform 0.05s ease-out; 
     position: absolute;
-    bottom: 50px; /* Position above the surface layer */
+    bottom: 50px; 
     left: 10%;
     display: flex;
-    align-items: center;
+    /* IMPORTANT: Align items to the left to keep the spring next to the block */
+    align-items: center; 
     z-index: 10; 
 }
 
 #wood-block {
     width: 60px;
     height: 40px;
-    background-color: #8B4513; /* Wood color */
+    background-color: #8B4513; 
     border: 1px solid #65300d;
-    cursor: grab; /* Shows the user they can drag it */
+    cursor: grab; 
 }
 
+/* --- SPRING BALANCE STYLES --- */
 .spring-balance {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 80px;
-    height: 20px;
-    background-color: #c9c9c9;
-    border: 2px solid #666;
-    margin-right: 5px;
+    /* Margin to separate the block and the spring slightly */
+    margin-left: 5px; 
 }
 
-.scale-reading {
+.spring-hook {
+    width: 10px;
+    height: 15px;
+    background-color: #555;
+    border-radius: 0 50% 50% 0; /* Creates a hook shape */
+}
+
+.scale-body {
+    width: 100px; /* Width of the balance tube */
+    height: 25px;
+    background-color: #c9c9c9;
+    border: 2px solid #666;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+.scale-indicator {
+    /* This element simulates the red/black measuring scale */
+    position: absolute;
+    right: 0; /* Anchors the right side */
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, #ccc 0%, #ccc 80%, #d9534f 80%, #d9534f 100%); 
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; /* Text starts on the left */
+    padding-left: 5px;
+    box-sizing: border-box;
     font-weight: bold;
     font-size: 0.9em;
     color: #000000;
+    /* Transition applied by JS to stretch the scale */
+    transition: transform 0.05s ease-out; 
 }
+
 
 /* Specific Surface Styles (Updated by JavaScript) */
 .plastic { background-color: #D3E0EA; }
