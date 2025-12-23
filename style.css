@@ -1,6 +1,6 @@
 body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background-color: #f4f7f6;
+    background-color: #f0f2f5;
     display: flex;
     justify-content: center;
     padding: 20px;
@@ -10,87 +10,93 @@ body {
     background: white;
     padding: 30px;
     border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    width: 850px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    width: 800px;
     text-align: center;
 }
 
-.controls { margin-bottom: 25px; }
+.controls { margin-bottom: 30px; }
 
-/* Simulation Stage */
+/* Simulation Area */
 .simulation-stage {
     position: relative;
-    height: 250px;
-    border-bottom: 5px solid #333;
+    height: 200px;
+    border-bottom: 4px solid #444;
+    background: #fff;
+    margin-bottom: 25px;
     overflow: hidden;
-    background-color: #fff;
-    margin-bottom: 20px;
 }
 
 #surface-floor {
     position: absolute;
     bottom: 0;
     width: 100%;
-    height: 60px;
+    height: 40px;
 }
 
-/* Updated Surface Textures */
-.texture-wood { background-color: #deb887; background-image: repeating-linear-gradient(0deg, transparent, transparent 10px, rgba(0,0,0,0.05) 10px, rgba(0,0,0,0.05) 12px); }
-.texture-metal { background-color: #bdc3c7; background-image: linear-gradient(rgba(255,255,255,0.5), transparent); }
-.texture-carpet { background-color: #556b2f; background-image: radial-gradient(#4b5d29 20%, transparent 20%); background-size: 8px 8px; }
+/* Surface Visuals */
+.texture-wood { background-color: #deb887; }
+.texture-metal { background: linear-gradient(to bottom, #bdc3c7, #95a5a6); }
+.texture-carpet { background-color: #556b2f; background-image: radial-gradient(#444 10%, transparent 10%); background-size: 10px 10px; }
 .texture-sandpaper { background-color: #c2b280; background-image: url('https://www.transparenttextures.com/patterns/sandpaper.png'); }
 
-#animation-container {
+/* The Assembly Fix */
+#pull-assembly {
     position: absolute;
-    bottom: 60px;
-    left: 10px;
+    bottom: 40px; /* Sits on floor */
+    left: 20px;
     display: flex;
-    align-items: center;
-    transition: transform 1.2s ease-in-out;
+    align-items: center; /* Vertical alignment */
+    transition: transform 1.5s ease-in-out;
 }
 
-#hand { font-size: 45px; z-index: 2; }
+#hand {
+    font-size: 40px;
+    flex-shrink: 0; /* Prevents hand from squishing */
+}
 
-/* The fix: This container grows, pushing the box */
 #spring-balance {
-    height: 15px;
-    min-width: 80px; /* Starting length */
-    background: #eee;
-    border: 2px solid #555;
+    height: 20px;
+    width: 80px; /* Starting width */
+    background: #d1d1d1;
+    border: 2px solid #777;
+    margin: 0; /* No gap so it looks connected */
     position: relative;
     transition: width 0.4s ease;
+    flex-shrink: 0; 
 }
 
 #spring-coil {
     width: 100%;
     height: 100%;
-    background: repeating-linear-gradient(90deg, transparent, transparent 5px, #444 5px, #444 10px);
+    background: repeating-linear-gradient(90deg, #d1d1d1, #d1d1d1 4px, #444 5px, #444 6px);
 }
 
 #scale-label {
     position: absolute;
-    top: -25px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: -22px;
+    width: 100%;
+    font-size: 12px;
     font-weight: bold;
-    font-size: 14px;
+    color: #e74c3c;
 }
 
 #box {
-    width: 70px;
-    height: 70px;
-    background-color: #a0522d;
+    width: 60px;
+    height: 60px;
+    background-color: #8b4513;
     color: white;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
     border: 2px solid #5d2e1a;
+    flex-shrink: 0; /* CRITICAL: This ensures the box is PUSHED, not overlapped */
 }
 
 .data-display {
-    background: #f9f9f9;
+    background: #fdfdfd;
     padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    border: 1px solid #eee;
+    border-radius: 8px;
 }
