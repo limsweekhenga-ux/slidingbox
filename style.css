@@ -1,150 +1,152 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     margin: 0;
-    background-color: #f4f4f9;
+    background-color: #cbd5e0;
 }
 
 .dashboard {
     background-color: #ffffff;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 90%;
-    max-width: 800px;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    width: 95%;
+    max-width: 650px;
     text-align: center;
 }
 
-h1 {
-    color: #333;
-    border-bottom: 2px solid #eee;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
+h1 { color: #2d3748; margin-bottom: 20px; font-size: 1.5rem; }
 
-.controls, .data-output {
-    margin: 20px 0;
+.controls {
+    background: #edf2f7;
     padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background-color: #fafafa;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #e2e8f0;
 }
 
-#surface-select {
-    padding: 8px 12px;
-    font-size: 16px;
-    border-radius: 4px;
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
 }
 
-/* Simulation Area Visuals */
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+    text-transform: uppercase;
+}
+
+#start-button { background-color: #48bb78; }
+#stop-button { background-color: #f56565; }
+#reset-button { background-color: #ed8936; }
+
+button:disabled { background-color: #a0aec0; cursor: not-allowed; }
+
+/* Simulation Area */
 #simulation-area {
     position: relative;
-    height: 150px;
-    border: 1px solid #ccc;
-    margin-top: 20px;
-    overflow: hidden;
-    display: flex;
-    align-items: flex-end; 
-}
-
-#surface-display {
-    position: absolute;
     width: 100%;
-    height: 50px; 
-    bottom: 0;
-    border-top: 5px solid #333;
+    height: 180px;
+    background-color: #f7fafc;
+    border-radius: 10px;
+    overflow: hidden;
+    border: 2px solid #4a5568;
 }
 
-#block-and-spring {
-    transition: transform 0.05s ease-out; 
+#surface-floor {
     position: absolute;
-    bottom: 50px; 
-    left: 10%;
+    bottom: 0;
+    width: 100%;
+    height: 50px;
+    border-top: 3px solid #2d3748;
+}
+
+/* Material Textures */
+.mat-plastic { background-color: #ebf8ff; box-shadow: inset 0 10px 20px rgba(255,255,255,0.5); }
+.mat-metal { background-color: #a0aec0; background-image: linear-gradient(90deg, transparent 50%, rgba(255,255,255,0.1) 50%); background-size: 40px 100%; }
+.mat-carpet { background-color: #4a5568; background-image: radial-gradient(#2d3748 1px, transparent 1px); background-size: 8px 8px; }
+.mat-sandpaper { background-color: #c05621; background-image: url('https://www.transparenttextures.com/patterns/sandpaper.png'); }
+
+#pulling-assembly {
+    position: absolute;
+    bottom: 50px;
+    left: 20px;
     display: flex;
-    /* IMPORTANT: Align items to the left to keep the spring next to the block */
-    align-items: center; 
-    z-index: 10; 
+    align-items: center;
 }
 
-#wood-block {
-    width: 60px;
-    height: 40px;
-    background-color: #8B4513; 
-    border: 1px solid #65300d;
-    cursor: grab; 
+#sliding-box {
+    width: 70px;
+    height: 50px;
+    background-color: #8b4513;
+    border: 3px solid #5d2e0a;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 0.8rem;
 }
 
-/* --- SPRING BALANCE STYLES --- */
+/* Spring Balance */
 .spring-balance {
     display: flex;
     align-items: center;
-    /* Margin to separate the block and the spring slightly */
-    margin-left: 5px; 
 }
 
-.spring-hook {
-    width: 10px;
-    height: 15px;
-    background-color: #555;
-    border-radius: 0 50% 50% 0; /* Creates a hook shape */
+.hook-line {
+    width: 25px;
+    height: 2px;
+    background-color: #4a5568;
 }
 
-.scale-body {
-    width: 100px; /* Width of the balance tube */
-    height: 25px;
-    background-color: #c9c9c9;
-    border: 2px solid #666;
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    overflow: hidden;
+.gauge-casing {
+    width: 80px;
+    height: 20px;
+    background: #edf2f7;
+    border: 2px solid #4a5568;
     position: relative;
+    border-radius: 3px;
+    overflow: hidden;
 }
 
-.scale-indicator {
-    /* This element simulates the red/black measuring scale */
+#force-fill {
     position: absolute;
-    right: 0; /* Anchors the right side */
-    width: 100%;
+    left: 0;
     height: 100%;
-    background: linear-gradient(to right, #ccc 0%, #ccc 80%, #d9534f 80%, #d9534f 100%); 
+    width: 0%;
+    background-color: #e53e3e;
+    transition: width 0.4s ease-out;
+}
+
+/* Pulling Hand */
+.pulling-hand {
     display: flex;
     align-items: center;
-    justify-content: flex-start; /* Text starts on the left */
-    padding-left: 5px;
-    box-sizing: border-box;
-    font-weight: bold;
-    font-size: 0.9em;
-    color: #000000;
-    /* Transition applied by JS to stretch the scale */
-    transition: transform 0.05s ease-out; 
+    margin-left: -2px;
 }
 
+.arm { width: 40px; height: 12px; background: #2d3748; border-radius: 0 4px 4px 0; }
+.hand { width: 15px; height: 20px; background: #2d3748; border-radius: 5px; margin-left: -10px; }
 
-/* Specific Surface Styles (Updated by JavaScript) */
-.plastic { background-color: #D3E0EA; }
-.metal { background-color: #A9A9A9; }
-.sandpaper { background-color: #CCAA99; background-image: repeating-linear-gradient(45deg, #775544 0, #775544 1px, transparent 1px, transparent 5px); }
-.carpet { background-color: #4CAF50; background-image: radial-gradient(#6BBF70 10%, transparent 11%); background-size: 10px 10px; }
-
-
-/* Data Output Styling */
-.data-output p {
-    margin: 5px 0;
-    text-align: left;
-    padding-left: 20px;
+/* Data Output */
+.data-output {
+    margin-top: 20px;
+    padding: 20px;
+    background: #2d3748;
+    border-radius: 10px;
+    color: white;
 }
 
-.feedback-message {
-    font-weight: bold;
-    margin-top: 10px;
-    min-height: 20px; 
-}
-
-#required-force-display {
-    color: #5cb85c;
-    font-size: 1.1em;
-}
+.force-display { font-size: 1.6rem; font-weight: bold; }
+#force-output { color: #68d391; }
+.unit { font-size: 1.1rem; color: #a0aec0; }
