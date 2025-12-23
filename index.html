@@ -14,10 +14,10 @@
         <div class="controls">
             <label for="surface-select">Select Surface: </label>
             <select id="surface-select">
-                <option value="wood">Wood</option>
-                <option value="metal">Metal (Smooth)</option>
-                <option value="sandpaper">Sandpaper (Rough)</option>
-                <option value="carpet">Carpet (High Friction)</option>
+                <option value="wood">wood</option>
+                <option value="metal">metal</option>
+                <option value="carpet">carpet</option>
+                <option value="sandpaper">sandpaper</option>
             </select>
             <button id="run-btn">Pull Box</button>
             <button id="reset-btn">Reset</button>
@@ -28,20 +28,18 @@
             
             <div id="animation-container">
                 <div id="hand">✋</div>
-                
                 <div id="spring-balance">
-                    <div id="spring"></div>
+                    <div id="spring-coil"></div>
                     <div id="scale-label">0N</div>
                 </div>
-
                 <div id="box">BOX</div>
             </div>
         </div>
 
         <div class="data-display">
             <h3>Data Output</h3>
-            <p>Surface Material: <span id="display-surface">Wood</span></p>
-            <p>Force Needed to Move: <strong><span id="display-force">0</span> Newtons (N)</strong></p>
+            <p>Surface Material: <span id="display-surface">wood</span></p>
+            <p>Force Needed to Move Box Across Surface: <strong><span id="display-force">0</span> N</strong></p>
         </div>
     </div>
 
