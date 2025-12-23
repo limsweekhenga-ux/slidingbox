@@ -1,152 +1,90 @@
-body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    background-color: #cbd5e0;
-}
+document.addEventListener('DOMContentLoaded', () => {
+    const materialSelect = document.getElementById('material-select');
+    const startButton = document.getElementById('start-button');
+    const stopButton = document.getElementById('stop-button');
+    const resetButton = document.getElementById('reset-button');
+    const surfaceFloor = document.getElementById('surface-floor');
+    const pullingAssembly = document.getElementById('pulling-assembly');
+    const forceFill = document.getElementById('force-fill');
+    const forceOutput = document.getElementById('force-output');
 
-.dashboard {
-    background-color: #ffffff;
-    padding: 25px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    width: 95%;
-    max-width: 650px;
-    text-align: center;
-}
+    // Constants
+    const MASS_KG = 0.8; // Mass of the box
+    const GRAVITY = 9.81;
+    
+    // Friction Coefficients (mu)
+    const frictionValues = {
+        plastic: 0.15,
+        metal: 0.30,
+        carpet: 0.55,
+        sandpaper: 0.85
+    };
 
-h1 { color: #2d3748; margin-bottom: 20px; font-size: 1.5rem; }
+    let animationTimeout;
 
-.controls {
-    background: #edf2f7;
-    padding: 15px;
-    border-radius: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #e2e8f0;
-}
+    function updateSetup() {
+        const material = materialSelect.value;
+        surfaceFloor.className = 'mat-' + material;
+        
+        // Calculate Force: F = mu * m * g
+        const force = frictionValues[material] * MASS_KG * GRAVITY;
+        forceOutput.textContent = force.toFixed(2);
+        
+        resetSimulation();
+    }
 
-.button-group {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 10px;
-}
+    function startPull() {
+        const material = materialSelect.value;
+        const mu = frictionValues[material];
+        
+        startButton.disabled = true;
+        stopButton.disabled = false;
+        materialSelect.disabled = true;
 
-button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-    color: white;
-    text-transform: uppercase;
-}
+        // 1. Visual "Tension": Gauge fills up first
+        forceFill.style.width = (mu * 100) + '%';
 
-#start-button { background-color: #48bb78; }
-#stop-button { background-color: #f56565; }
-#reset-button { background-color: #ed8936; }
+        // 2. Start sliding after a split second
+        animationTimeout = setTimeout(() => {
+            // Speed of slide is slower if friction is higher
+            const duration = 2 + (mu * 3); 
+            pullingAssembly.style.transition = `left ${duration}s linear`;
+            pullingAssembly.style.left = '400px';
+        }, 400);
+    }
 
-button:disabled { background-color: #a0aec0; cursor: not-allowed; }
+    function stopSimulation() {
+        clearTimeout(animationTimeout);
+        const currentLeft = window.getComputedStyle(pullingAssembly).left;
+        pullingAssembly.style.transition = 'none';
+        pullingAssembly.style.left = currentLeft;
 
-/* Simulation Area */
-#simulation-area {
-    position: relative;
-    width: 100%;
-    height: 180px;
-    background-color: #f7fafc;
-    border-radius: 10px;
-    overflow: hidden;
-    border: 2px solid #4a5568;
-}
+        startButton.disabled = false;
+        stopButton.disabled = true;
+        materialSelect.disabled = false;
+    }
 
-#surface-floor {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 50px;
-    border-top: 3px solid #2d3748;
-}
+    function resetSimulation() {
+        clearTimeout(animationTimeout);
+        pullingAssembly.style.transition = 'none';
+        pullingAssembly.style.left = '20px';
+        forceFill.style.width = '0%';
+        
+        startButton.disabled = false;
+        stopButton.disabled = true;
+        materialSelect.disabled = false;
+        
+        // Re-calc force for display
+        const force = frictionValues[materialSelect.value] * MASS_KG * GRAVITY;
+        forceOutput.textContent = force.toFixed(2);
+    }
 
-/* Material Textures */
-.mat-plastic { background-color: #ebf8ff; box-shadow: inset 0 10px 20px rgba(255,255,255,0.5); }
-.mat-metal { background-color: #a0aec0; background-image: linear-gradient(90deg, transparent 50%, rgba(255,255,255,0.1) 50%); background-size: 40px 100%; }
-.mat-carpet { background-color: #4a5568; background-image: radial-gradient(#2d3748 1px, transparent 1px); background-size: 8px 8px; }
-.mat-sandpaper { background-color: #c05621; background-image: url('https://www.transparenttextures.com/patterns/sandpaper.png'); }
+    // Listeners
+    materialSelect.addEventListener('change', updateSetup);
+    startButton.addEventListener('click', startPull);
+    stopButton.addEventListener('click', stopSimulation);
+    resetButton.addEventListener('click', resetSimulation);
 
-#pulling-assembly {
-    position: absolute;
-    bottom: 50px;
-    left: 20px;
-    display: flex;
-    align-items: center;
-}
-
-#sliding-box {
-    width: 70px;
-    height: 50px;
-    background-color: #8b4513;
-    border: 3px solid #5d2e0a;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    font-size: 0.8rem;
-}
-
-/* Spring Balance */
-.spring-balance {
-    display: flex;
-    align-items: center;
-}
-
-.hook-line {
-    width: 25px;
-    height: 2px;
-    background-color: #4a5568;
-}
-
-.gauge-casing {
-    width: 80px;
-    height: 20px;
-    background: #edf2f7;
-    border: 2px solid #4a5568;
-    position: relative;
-    border-radius: 3px;
-    overflow: hidden;
-}
-
-#force-fill {
-    position: absolute;
-    left: 0;
-    height: 100%;
-    width: 0%;
-    background-color: #e53e3e;
-    transition: width 0.4s ease-out;
-}
-
-/* Pulling Hand */
-.pulling-hand {
-    display: flex;
-    align-items: center;
-    margin-left: -2px;
-}
-
-.arm { width: 40px; height: 12px; background: #2d3748; border-radius: 0 4px 4px 0; }
-.hand { width: 15px; height: 20px; background: #2d3748; border-radius: 5px; margin-left: -10px; }
-
-/* Data Output */
-.data-output {
-    margin-top: 20px;
-    padding: 20px;
-    background: #2d3748;
-    border-radius: 10px;
-    color: white;
-}
-
-.force-display { font-size: 1.6rem; font-weight: bold; }
-#force-output { color: #68d391; }
-.unit { font-size: 1.1rem; color: #a0aec0; }
+    // Init
+    updateSetup();
+});
