@@ -1,90 +1,163 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const materialSelect = document.getElementById('material-select');
-    const startButton = document.getElementById('start-button');
-    const stopButton = document.getElementById('stop-button');
-    const resetButton = document.getElementById('reset-button');
-    const surfaceFloor = document.getElementById('surface-floor');
-    const pullingAssembly = document.getElementById('pulling-assembly');
-    const forceFill = document.getElementById('force-fill');
-    const forceOutput = document.getElementById('force-output');
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #cbd5e0;
+}
 
-    // Constants
-    const MASS_KG = 0.8; // Mass of the box
-    const GRAVITY = 9.81;
-    
-    // Friction Coefficients (mu)
-    const frictionValues = {
-        plastic: 0.15,
-        metal: 0.30,
-        carpet: 0.55,
-        sandpaper: 0.85
-    };
+.dashboard {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 95%;
+    max-width: 600px;
+    text-align: center;
+}
 
-    let animationTimeout;
+h1 { color: #2d3748; margin-bottom: 20px; font-size: 1.4rem; }
 
-    function updateSetup() {
-        const material = materialSelect.value;
-        surfaceFloor.className = 'mat-' + material;
-        
-        // Calculate Force: F = mu * m * g
-        const force = frictionValues[material] * MASS_KG * GRAVITY;
-        forceOutput.textContent = force.toFixed(2);
-        
-        resetSimulation();
-    }
+.controls {
+    background: #f7fafc;
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    border: 2px solid #e2e8f0;
+}
 
-    function startPull() {
-        const material = materialSelect.value;
-        const mu = frictionValues[material];
-        
-        startButton.disabled = true;
-        stopButton.disabled = false;
-        materialSelect.disabled = true;
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
 
-        // 1. Visual "Tension": Gauge fills up first
-        forceFill.style.width = (mu * 100) + '%';
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    color: white;
+}
 
-        // 2. Start sliding after a split second
-        animationTimeout = setTimeout(() => {
-            // Speed of slide is slower if friction is higher
-            const duration = 2 + (mu * 3); 
-            pullingAssembly.style.transition = `left ${duration}s linear`;
-            pullingAssembly.style.left = '400px';
-        }, 400);
-    }
+#start-button { background-color: #38a169; }
+#stop-button { background-color: #e53e3e; }
+#reset-button { background-color: #d69e2e; }
 
-    function stopSimulation() {
-        clearTimeout(animationTimeout);
-        const currentLeft = window.getComputedStyle(pullingAssembly).left;
-        pullingAssembly.style.transition = 'none';
-        pullingAssembly.style.left = currentLeft;
+button:disabled { background-color: #a0aec0; cursor: not-allowed; }
 
-        startButton.disabled = false;
-        stopButton.disabled = true;
-        materialSelect.disabled = false;
-    }
+/* Simulation Area */
+#simulation-area {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    background-color: #edf2f7;
+    border: 3px solid #4a5568;
+    border-radius: 10px;
+    overflow: hidden;
+}
 
-    function resetSimulation() {
-        clearTimeout(animationTimeout);
-        pullingAssembly.style.transition = 'none';
-        pullingAssembly.style.left = '20px';
-        forceFill.style.width = '0%';
-        
-        startButton.disabled = false;
-        stopButton.disabled = true;
-        materialSelect.disabled = false;
-        
-        // Re-calc force for display
-        const force = frictionValues[materialSelect.value] * MASS_KG * GRAVITY;
-        forceOutput.textContent = force.toFixed(2);
-    }
+#surface-floor {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    border-top: 4px solid #2d3748;
+}
 
-    // Listeners
-    materialSelect.addEventListener('change', updateSetup);
-    startButton.addEventListener('click', startPull);
-    stopButton.addEventListener('click', stopSimulation);
-    resetButton.addEventListener('click', resetSimulation);
+/* Material Colors */
+.mat-plastic { background-color: #bee3f8; }
+.mat-metal { background-color: #a0aec0; background-image: linear-gradient(90deg, transparent 50%, rgba(255,255,255,0.2) 50%); background-size: 50px 100%; }
+.mat-carpet { background-color: #4a5568; background-image: radial-gradient(#2d3748 1px, transparent 1px); background-size: 10px 10px; }
+.mat-sandpaper { background-color: #975a16; }
 
-    // Init
-    updateSetup();
-});
+#pulling-assembly {
+    position: absolute;
+    bottom: 60px; /* Sits exactly on the floor line */
+    left: 20px;
+    display: flex;
+    align-items: center;
+    z-index: 10;
+}
+
+/* 1. The Box */
+#sliding-box {
+    width: 80px;
+    height: 60px;
+    background-color: #8b4513;
+    border: 3px solid #5d2e0a;
+    color: white;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 2. Spring Balance */
+.spring-balance {
+    display: flex;
+    align-items: center;
+}
+
+.hook {
+    width: 20px;
+    height: 4px;
+    background-color: #4a5568;
+}
+
+.gauge-body {
+    width: 80px;
+    height: 24px;
+    background: #ffffff;
+    border: 2px solid #2d3748;
+    position: relative;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#force-fill {
+    position: absolute;
+    left: 0;
+    height: 100%;
+    width: 0%;
+    background-color: #f56565;
+    transition: width 0.5s ease;
+}
+
+/* 3. The Toy Soldier Hand */
+.toy-hand {
+    display: flex;
+    align-items: center;
+}
+
+.arm {
+    width: 50px;
+    height: 14px;
+    background-color: #2d5a27; /* Army Green */
+    border-radius: 0 5px 5px 0;
+}
+
+.fist {
+    width: 20px;
+    height: 24px;
+    background-color: #2d5a27;
+    margin-left: -15px;
+    border-radius: 5px;
+}
+
+/* Data Output */
+.data-output {
+    margin-top: 20px;
+    padding: 20px;
+    background: #2d3748;
+    color: white;
+    border-radius: 10px;
+}
+
+.force-display { font-size: 1.8rem; font-weight: bold; }
+#force-output { color: #68d391; }
+.unit { font-size: 1rem; color: #a0aec0; }
