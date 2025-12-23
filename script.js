@@ -1,83 +1,85 @@
 document.addEventListener('DOMContentLoaded', () => {
     const materialSelect = document.getElementById('material-select');
-    const startButton = document.getElementById('start-button');
-    const stopButton = document.getElementById('stop-button');
-    const resetButton = document.getElementById('reset-button');
-    const surfaceFloor = document.getElementById('surface-floor');
-    const pullingAssembly = document.getElementById('pulling-assembly');
-    const forceFill = document.getElementById('force-fill');
-    const forceOutput = document.getElementById('force-output');
+    const startBtn = document.getElementById('start-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const floor = document.getElementById('floor');
+    const assembly = document.getElementById('pulling-assembly');
+    const forceLine = document.getElementById('force-line');
+    const forceVal = document.getElementById('force-val');
 
-    // Friction coefficients (Mu)
-    const frictionData = {
-        plastic: 0.12,
-        metal: 0.25,
-        carpet: 0.50,
-        sandpaper: 0.85
+    // Friction data
+    const friction = {
+        plastic: 0.2,
+        metal: 0.35,
+        carpet: 0.6,
+        sandpaper: 0.9
     };
 
-    const MASS = 1.0; // 1 kg box
-    const GRAVITY = 9.8;
-
-    let moveTimeout;
+    let animationTimer;
 
     function update() {
-        const material = materialSelect.value;
-        surfaceFloor.className = 'mat-' + material;
+        const mat = materialSelect.value;
+        floor.className = mat;
         
-        // F = mu * m * g
-        const force = frictionData[material] * MASS * GRAVITY;
-        forceOutput.textContent = force.toFixed(2);
+        // F = mu * mass * gravity (assuming 1kg)
+        const force = friction[mat] * 9.81;
+        forceVal.textContent = force.toFixed(2);
         
-        reset();
+        resetSim();
     }
 
-    function start() {
-        const material = materialSelect.value;
-        const mu = frictionData[material];
+    function startSim() {
+        const mat = materialSelect.value;
+        const mu = friction[mat];
         
-        startButton.disabled = true;
-        stopButton.disabled = false;
+        startBtn.disabled = true;
+        stopBtn.disabled = false;
         materialSelect.disabled = true;
 
-        // Fill the gauge to represent tension
-        forceFill.style.width = (mu * 100) + '%';
+        // Visual tension in scale
+        forceLine.style.width = (mu * 100) + "%";
 
-        // Wait for gauge to fill, then slide
-        moveTimeout = setTimeout(() => {
-            // Speed of slide depends on friction
+        setTimeout(() => {
+            // Speed depends on friction (rougher = slower)
             const duration = 2 + (mu * 3);
-            pullingAssembly.style.transition = `left ${duration}s linear`;
-            pullingAssembly.style.left = '450px';
+            assembly.style.transition = `left ${duration}s linear`;
+            assembly.style.left = "350px";
         }, 500);
+
+        animationTimer = setTimeout(() => {
+            stopBtn.disabled = true;
+            startBtn.disabled = false;
+            materialSelect.disabled = false;
+        }, 5000);
     }
 
-    function stop() {
-        clearTimeout(moveTimeout);
-        const currentPos = window.getComputedStyle(pullingAssembly).left;
-        pullingAssembly.style.transition = 'none';
-        pullingAssembly.style.left = currentPos;
-
-        startButton.disabled = false;
-        stopButton.disabled = true;
-    }
-
-    function reset() {
-        clearTimeout(moveTimeout);
-        pullingAssembly.style.transition = 'none';
-        pullingAssembly.style.left = '20px';
-        forceFill.style.width = '0%';
+    function stopSim() {
+        clearTimeout(animationTimer);
+        const currentLeft = window.getComputedStyle(assembly).left;
+        assembly.style.transition = "none";
+        assembly.style.left = currentLeft;
         
-        startButton.disabled = false;
-        stopButton.disabled = true;
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+    }
+
+    function resetSim() {
+        clearTimeout(animationTimer);
+        assembly.style.transition = "none";
+        assembly.style.left = "10px";
+        forceLine.style.width = "0%";
+        
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
         materialSelect.disabled = false;
     }
 
     materialSelect.addEventListener('change', update);
-    startButton.addEventListener('click', start);
-    stopButton.addEventListener('click', stop);
-    resetButton.addEventListener('click', reset);
+    startBtn.addEventListener('click', startSim);
+    stopBtn.addEventListener('click', stopSim);
+    resetBtn.addEventListener('click', resetSim);
 
-    // Initial run
+    // Initial call
     update();
 });
