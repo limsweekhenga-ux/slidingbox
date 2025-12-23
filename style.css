@@ -1,88 +1,59 @@
-body {
-    font-family: sans-serif;
-    display: flex;
-    justify-content: center;
-    padding-top: 50px;
-    background-color: #f0f0f0;
-}
-
-.lab-container {
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+.main-container {
     width: 600px;
+    margin: 50px auto;
     text-align: center;
+    font-family: Arial, sans-serif;
+    border: 2px solid #333;
+    padding: 20px;
+    background: #fff;
 }
 
-.controls, .results-board {
-    background: #e9ecef;
+.control-panel, .data-box {
+    background: #eee;
     padding: 15px;
-    border-radius: 8px;
     margin: 10px 0;
+    border-radius: 5px;
 }
 
-.button-row {
-    margin-top: 10px;
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-}
-
-button {
-    padding: 8px 15px;
-    cursor: pointer;
-    border: none;
-    border-radius: 4px;
-    font-weight: bold;
-    color: white;
-}
-
-#start-btn { background: #28a745; }
-#stop-btn { background: #dc3545; }
-#reset-btn { background: #ffc107; color: #333; }
-button:disabled { background: #ccc; cursor: not-allowed; }
-
-/* Simulation Area */
-#simulation-window {
+.sim-stage {
     position: relative;
     width: 100%;
     height: 200px;
-    background: #fff;
-    border: 2px solid #333;
+    background: #sky;
+    border: 2px solid #000;
     overflow: hidden;
-    margin-top: 20px;
+    background-color: #e0f7fa;
 }
 
-#floor {
+#ground-surface {
     position: absolute;
     bottom: 0;
     width: 100%;
     height: 50px;
-    border-top: 3px solid #000;
+    border-top: 4px solid #333;
 }
 
-/* Material styles */
-.plastic { background-color: #a5d8ff; }
-.metal { background-color: #adb5bd; }
-.carpet { background-color: #513b3b; }
-.sandpaper { background-color: #854d0e; }
+/* Material Colors */
+.bg-plastic { background: #81d4fa; }
+.bg-metal { background: #b0bec5; }
+.bg-carpet { background: #795548; }
+.bg-sandpaper { background: #ffab91; }
 
-/* The Moving Assembly */
-#pulling-assembly {
+/* MOVING ASSEMBLY */
+#moving-parts {
     position: absolute;
-    bottom: 50px;
-    left: 10px;
-    display: flex;
+    bottom: 50px; /* Sits on top of the ground */
+    left: 20px;
+    display: flex; /* Lines elements up horizontally */
     align-items: center;
-    width: 300px;
+    transition: none;
 }
 
-.box {
+.the-box {
     width: 80px;
     height: 60px;
-    background: #8b4513;
-    border: 3px solid #3e2723;
+    background: #5d4037; /* Dark Brown */
+    border: 3px solid #000;
     color: white;
     display: flex;
     align-items: center;
@@ -90,51 +61,61 @@ button:disabled { background: #ccc; cursor: not-allowed; }
     font-weight: bold;
 }
 
-.spring-balance {
+.spring-scale {
     display: flex;
     align-items: center;
 }
 
-.hook-wire {
+.string {
     width: 20px;
     height: 3px;
-    background: #333;
+    background: #000;
 }
 
-.scale-body {
-    width: 70px;
+.scale-case {
+    width: 60px;
     height: 20px;
-    background: #ced4da;
-    border: 2px solid #333;
+    border: 2px solid #000;
+    background: white;
     position: relative;
 }
 
-#force-line {
+#red-gauge {
     position: absolute;
     left: 0;
     height: 100%;
     width: 0%;
-    background: #ff0000;
+    background: red;
 }
 
-.soldier-hand {
+.toy-hand {
     display: flex;
     align-items: center;
 }
 
 .arm {
     width: 40px;
-    height: 15px;
-    background: #2d5a27; /* Army Green */
+    height: 12px;
+    background: #2e7d32; /* Green Army Arm */
 }
 
-.fist {
+.hand {
     width: 15px;
     height: 25px;
-    background: #2d5a27;
-    margin-left: -5px;
+    background: #2e7d32;
     border-radius: 4px;
+    margin-left: -5px;
 }
 
-.results-board { font-size: 1.5rem; font-weight: bold; }
-#force-val { color: #d9534f; }
+#force-display {
+    font-size: 24px;
+    color: red;
+    font-weight: bold;
+}
+
+button {
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
