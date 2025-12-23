@@ -12,12 +12,12 @@
 
         <div class="controls">
             <div class="input-group">
-                <label for="material-select">Select Surface Material:</label>
+                <label for="material-select">Select Surface:</label>
                 <select id="material-select">
-                    <option value="plastic">Plastic</option>
-                    <option value="metal">Metal</option>
-                    <option value="carpet">Carpet</option>
-                    <option value="sandpaper">Sandpaper</option>
+                    <option value="plastic">Plastic (Smooth)</option>
+                    <option value="metal">Metal (Slippery)</option>
+                    <option value="carpet">Carpet (Rough)</option>
+                    <option value="sandpaper">Sandpaper (Very Rough)</option>
                 </select>
             </div>
             <div class="button-group">
@@ -34,22 +34,22 @@
                 <div id="sliding-box">BOX</div>
 
                 <div class="spring-balance">
-                    <div class="hook-line"></div>
-                    <div class="gauge-casing">
+                    <div class="hook"></div>
+                    <div class="gauge-body">
                         <div id="force-fill"></div>
                     </div>
                 </div>
 
-                <div class="pulling-hand">
+                <div class="toy-hand">
                     <div class="arm"></div>
-                    <div class="hand"></div>
+                    <div class="fist"></div>
                 </div>
             </div>
         </div>
         
         <div class="data-output">
             <div class="force-display">
-                <span class="label">Force Needed to Pull:</span>
+                <span class="label">Pulling Force:</span>
                 <span id="force-output">0.00</span> <span class="unit">N</span>
             </div>
         </div>
